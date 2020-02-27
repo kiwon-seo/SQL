@@ -72,27 +72,28 @@ Point
 1.LEFT(데이터,n) --> 왼쪽에서 n만큼의 글자를 가져옴.
 2.<> --> not equal을 의미함.
 
+
 /*
 SQL (BY SQLZOO)
-
 CHAPTER4
 SELECT from SELECT
-
 */
 --#3
 /*
 List the name and continent of countries in the continents containing either Argentina or Australia. Order by name of the country.
-
 Q) 아르헨티나,호주인 대륙의 나라들을 보여라. (Order by name)
 */
-SELECT name, continent
-FROM world
-WHERE continent IN (SELECT continent FROM world WHERE name IN ('Argentina', 'Australia'))
-ORDER BY name
+SELECT name FROM world
+WHERE continent='europe' and (gdp/population) > (select gdp/population from world where name='united kingdom')
 
 Point
-1. (SELECT ~~~) --> SELECT 문 자체를 조건으로 만들어버리는 것. 
-(SELECT continent FROM world WHERE name IN ('Argentina', 'Australia')) --> '아르헨, 호주인 나라의 대륙들' 이라는 집합을 만든거임!
+1. (SELECT ~~~) --> SELECT 문 자체를 조건으로 만들어버리는 것.
+위의 예가 아르헨, 호주인 나라의 대륙들이라는 집합을 만든것임.
+
+select with select 6번부터할차례
+
+
+                                            
    
                                             
                                             
