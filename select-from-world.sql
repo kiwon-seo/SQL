@@ -1,135 +1,74 @@
-/*
-Second section of sqlzoo, SELECT from WORLD
-*/
+SQL (BY SQLZOO)
 
+CHAPTER1
+SELECT from world
 
---#1
-/*
-Read the notes about this table. Observe the result of running a simple SQL command.
-*/
-SELECT name, continent, population
-FROM world
+# Data 설명
+world라는 table
+column은 name(나라이름), continent(대륙), area(크기), population(인구수),	gdp(국내총생산)
 
---#2
-/*
-How to use WHERE to filter records.
-Show the name for the countries that have a population of at least 200 million. 200 million is 200000000, there are eight zeros.
-*/
-SELECT name
-FROM world
-WHERE population>=200000000
-
---#3
-/*
-Give the name and the per capita GDP for those countries with a population of at least 200 million.
-*/
-SELECT name, gdp/population
-FROM world
-WHERE population >= 200000000
-
---#4
-/*
-Show the name and population in millions for the countries of the continent 'South America'. Divide the population by 1000000 to get population in millions.
-*/
-SELECT name, population/1000000
-FROM world
-WHERE continent = 'South America'
-
---#5
-/*
-Show the name and population for France, Germany, Italy
-*/
-SELECT name, population
-FROM world
-WHERE name in ('France', 'Germany', 'Italy')
 
 --#6
 /*
-Show the countries which have a name that includes the word 'United'
+Q) '%'문제로 United라는 단어가 포함된 국가
 */
 SELECT name
 FROM world
 WHERE name LIKE '%united%'
 
---#7
-/*
-Two ways to be big: A country is big if it has an area of more than 3 million sq km or it has a population of more than 250 million.
+Point
+1.'%abc' --> abc로 끝나는 단어
+2.'abc%' --> abc로 시작하는 단어
+3.'%abc%'--> abc를 포함한 단어
 
-Show the countries that are big by area or big by population. Show name, population and area.
-*/
-SELECT name, population, area
-FROM world
-WHERE area > 3000000 OR population > 250000000
+문자이기 때문에 양쪽에 ''를 써야하는 것을 잊지말자!!
+
 
 --#8
 /*
-USA and China are big in population and big by area. Exclude these countries.
+Exclusive OR (XOR). Show the countries that are big by area (more than 3 million) 
+or big by population (more than 250 million) but not both. 
+Show name, population and area.
 
-Show the countries that are big by area or big by population but not both. Show name, population and area.
+Q) XOR 문제로 big area XOR big population 을 푸는 문제이다.
+
 */
-SELECT name, population, area
-FROM world
-WHERE (area > 3000000 AND population < 250000000)
-  OR (area < 3000000 and population > 250000000)
+SELECT name,population,area FROM world
+WHERE population >250000000 XOR area > 3000000
 
 --#9
 /*
-Show the name and population in millions and the GDP in billions for the countries of the continent 'South America'. Use the ROUND function to show the values to two decimal places.
-
+Show the name and population in millions and the GDP in billions for the countries of the continent 'South America'. 
+Use the ROUND function to show the values to two decimal places.
 For South America show population in millions and GDP in billions to 2 decimal places.
+
+Q) ROUND 함수를 쓰는 문제로 소수점을 반올림할때 사용된다.
 */
 SELECT name, ROUND(population/1000000,2), ROUND(gdp/1000000000, 2)
 FROM world
 WHERE continent = 'South America'
 
---#10
-/*
-Show the per-capita GDP for those countries with a GDP of at least one trillion (1000000000000; that is 12 zeros). Round this value to the nearest 1000.
+Point
+1.ROUND(데이터,끝자릿수를 나타냄)
 
-Show per-capita GDP for the trillion dollar countries to the nearest $1000.
-*/
-SELECT name, ROUND(gdp/population, -3)
-FROM world
-WHERE gdp > 1000000000000
+EX) 
+1.ROUND(데이터,2)  --> 109.3578788.....을 109.36 처럼 3번째 소수점에서 반올림한다.(소수점 2번째까지 나타냄)
+2.ROUND(데이터,0)  --> 109.3578788.....을 109처럼 1번째 소수점에서 반올림한다.
+3.ROUND(데이터,-1) --> 109.3578788.....을 110처럼 1의자리에서 반올림한다.
 
---#11
-/*
-The CASE statement shown is used to substitute North America for Caribbean in the third column.
-
-Show the name and the continent - but substitute Australasia for Oceania - for countries beginning with N.
-*/
-SELECT name, continent,
-       CASE WHEN continent='Caribbean' THEN 'North America'
-            ELSE continent END
-FROM world
-WHERE name LIKE 'J%'
 
 --#12
 /*
-Show the name and the continent - but substitute Eurasia for Europe and Asia; substitute America - for each country in North America or South America or Caribbean.
-Show countries beginning with A or B
-*/
-SELECT name,
-CASE WHEN continent = 'Europe' OR continent = 'Asia' THEN 'Eurasia'
-      WHEN continent LIKE '%america%' OR continent = 'Caribbean' THEN 'America'
-      ELSE continent END
-FROM world
-WHERE name LIKE 'a%' or name LIKE 'b%'
+Show the name and the capital where the first letters of each match. 
+Don't include countries where the name and the capital are the same word.
 
---#13
-/*
-Put the continents right...
+Q) LEFT & <> 문제로 name의 첫글자와 capital의 첫글자가 같지만 동일하지는 않은 나라를 보여라.
 
-Oceania becomes Australasia
-Countries in Eurasia and Turkey go to Europe/Asia
-Caribbean islands starting with 'B' go to North America, other Caribbean islands go to South America
-Show the name, the original continent and the new continent of all countries.
 */
-SELECT name, continent,
-CASE WHEN continent = 'Oceania' THEN 'Australasia'
-     WHEN continent = 'Eurasia' OR name = 'Turkey' THEN 'Europe/Asia'
-     WHEN continent = 'Caribbean' AND name LIKE 'b%' THEN 'North America'
-     WHEN continent = 'Caribbean' AND name NOT LIKE 'b%' THEN 'South America'
-     ELSE continent END
-FROM world
-ORDER BY name
+SELECT name, capital FROM world
+WHERE LEFT(name,1)=LEFT(capital,1) and name <> capital
+
+Point
+1.LEFT(데이터,n) --> 왼쪽에서 n만큼의 글자를 가져옴.
+2.<> --> not equal을 의미함.
+
