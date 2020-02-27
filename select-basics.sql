@@ -1,64 +1,88 @@
-/*
-First section of sqlzoo, SELECT basics
-*/
---#1
-/*
-The example shows the population of 'France'. Strings should be in 'single quotes';
+QL (BY SQLZOO)
 
-Show the population of Germany
-*/
-SELECT population
-FROM world
-WHERE name = 'Germany'
+CHAPTER1
+SELECT from world
 
---#2
-/*
-The query shows the population density population/area for each country where the area is over 5,000,000 km2.
-Show the name and per capita gdp: gdp/population for each country where the area is over 5,000,000 km2
-*/
-SELECT name, gdp/population
-FROM world
-WHERE area > 5000000
+# Data 설명
+world라는 table
+column은 name(나라이름), continent(대륙), area(크기), population(인구수),	gdp(국내총생산)
 
---#3
-/*
-Where to find some very small, very rich countries.
-We use AND to ensure that two or more conditions hold true.
-
-The example shows the countries where the population is small and the gdp is high.
-Show the name and continent where the area is less than 2000 and the gdp is more than 5000000000
-*/
-SELECT name , continent
-FROM world
-WHERE area < 2000
-AND gdp > 5000000000
-
---#4
-/*
-Checking a list The word IN allows us to check if an item is in a list. The example shows the name and population for the countries 'Ireland', 'Iceland' and 'Denmark'
-
-Show the name and the population for 'Denmark', 'Finland', 'Norway', 'Sweden'
-*/
-SELECT name, population
-FROM world
-WHERE name IN ('Norway', 'Sweden', 'Finland',
-                 'Denmark')
---#5
-/*
-What are the countries beginning with G? The word LIKE permits pattern matching - % is the wildcard. The examples shows countries beginning with D
-
-Show each country that begins with G
-*/
-SELECT name
-FROM world
-WHERE name LIKE 'G%'
 
 --#6
 /*
-Which countries are not too small and not too big? Show the country and the area for countries with an area between 200000 and 250000. BETWEEN allows range checking - note that it is inclusive.
-
-Show the area in 1000 square km. Show area/1000 instead of area
+Q) '%'문제로 United라는 단어가 포함된 국가
 */
-SELECT name, area/1000
+SELECT name
 FROM world
-WHERE area BETWEEN 200000 AND 250000
+WHERE name LIKE '%united%'
+
+Point
+1.'%abc' --> abc로 끝나는 단어
+2.'abc%' --> abc로 시작하는 단어
+3.'%abc%'--> abc를 포함한 단어
+
+문자이기 때문에 양쪽에 ''를 써야하는 것을 잊지말자!!
+
+
+--#8
+/*
+Exclusive OR (XOR). Show the countries that are big by area (more than 3 million) 
+or big by population (more than 250 million) but not both. 
+Show name, population and area.
+Q) XOR 문제로 big area XOR big population 을 푸는 문제이다.
+*/
+SELECT name,population,area FROM world
+WHERE population >250000000 XOR area > 3000000
+
+--#9
+/*
+Show the name and population in millions and the GDP in billions for the countries of the continent 'South America'. 
+Use the ROUND function to show the values to two decimal places.
+For South America show population in millions and GDP in billions to 2 decimal places.
+Q) ROUND 함수를 쓰는 문제로 소수점을 반올림할때 사용된다.
+*/
+SELECT name, ROUND(population/1000000,2), ROUND(gdp/1000000000, 2)
+FROM world
+WHERE continent = 'South America'
+
+Point
+1.ROUND(데이터,끝자릿수를 나타냄)
+
+EX) 
+1.ROUND(데이터,2)  --> 109.3578788.....을 109.36 처럼 3번째 소수점에서 반올림한다.(소수점 2번째까지 나타냄)
+2.ROUND(데이터,0)  --> 109.3578788.....을 109처럼 1번째 소수점에서 반올림한다.
+3.ROUND(데이터,-1) --> 109.3578788.....을 110처럼 1의자리에서 반올림한다.
+
+
+--#12
+/*
+Show the name and the capital where the first letters of each match. 
+Don't include countries where the name and the capital are the same word.
+Q) LEFT & <> 문제로 name의 첫글자와 capital의 첫글자가 같지만 동일하지는 않은 나라를 보여라.
+*/
+SELECT name, capital FROM world
+WHERE LEFT(name,1)=LEFT(capital,1) and name <> capital
+
+Point
+1.LEFT(데이터,n) --> 왼쪽에서 n만큼의 글자를 가져옴.
+2.<> --> not equal을 의미함.
+
+/*
+SQL (BY SQLZOO)
+CHAPTER4
+SELECT from SELECT
+*/
+--#3
+/*
+List the name and continent of countries in the continents containing either Argentina or Australia. Order by name of the country.
+Q) 아르헨티나,호주인 대륙의 나라들을 보여라. (Order by name)
+*/
+SELECT name, continent
+FROM world
+WHERE continent IN (SELECT continent FROM world WHERE name IN ('Argentina', 'Australia'))
+ORDER BY name
+
+Point
+1. (SELECT ~~~) --> SELECT 문 자체를 조건으로 만들어버리는 것. 
+(SELECT continent FROM world WHERE name IN ('Argentina', 'Australia')) --> '아르헨, 호주인 나라의 대륙들' 이라는 집합을 만든거임!
+
