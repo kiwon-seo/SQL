@@ -90,8 +90,66 @@ Point
 1. (SELECT ~~~) --> SELECT 문 자체를 조건으로 만들어버리는 것.
 위의 예가 아르헨, 호주인 나라의 대륙들이라는 집합을 만든것임.
 
-select with select 6번부터할차례
 
+--#7
+/*
+Find the largest country (by area) in each continent, show the continent, the name and the area:
+
+Q) 각 Continent마다 가장 area가 큰 나라의 continent,name,area를 보여라.
+*/
+SELECT continent, name, area
+FROM world x
+WHERE area >= ALL
+    (SELECT area FROM world y
+    WHERE y.continent=x.continent
+    AND area>0)
+
+Point
+1. world.x / world.y
+world를 2가지로 나누어서 contintent가 같은 조건을 만들어줌.
+
+2. ALL연산자
+값을 서브쿼리에 의해 리턴되는 모든 값과 조건값을 비교하여 모든 값을 만족해야만 참이다.
+
+--#8
+/*
+List each continent and the name of the country that comes first alphabetically.
+
+Q) 각 대륙에서 알파벳순서 처음으로 오는 나라와 그 대륙을 보여라.
+*/
+
+SELECT continent, name
+FROM world x
+WHERE name <= ALL(SELECT name FROM world y WHERE y.continent = x.continent)
+
+Point
+1. 문자열을 부등호 처리하면 알파벳 순으로 계산함! ex) korea > america
+2. world를 2가지로 나누어 continent가 같은 조건을 만들어줌
+
+--#9
+/*
+Find the continents where all countries have a population <= 25000000.
+Then find the names of the countries associated with these continents. Show name, continent and population.
+
+Q) 모든 국가가 25000000 보다 작은 Population인 대륙을 찾아라. 그리고 이 대륙과 연관된 나라의 이름, continent,population을 보여라.
+*/
+SELECT name, continent, population
+FROM world x
+WHERE 25000000  > ALL(SELECT population FROM world y WHERE x.continent = y.continent AND y.population > 0)
+
+Point
+1.
+
+
+--#10
+/*
+Some countries have populations more than three times that of any of their neighbours (in the same continent). Give the countries and continents.
+
+Q) 같은 대륙내의 어떤 나라보다 3배 이상의 Population인 나라의 이름과 continent를 보여라. 
+*/
+SELECT name, continent
+FROM world x
+WHERE population > ALL(SELECT population*3 FROM world y WHERE x.continent = y.continent AND population > 0 AND y.name != x.name)
 
                                             
    
