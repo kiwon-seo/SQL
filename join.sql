@@ -131,19 +131,28 @@ Q) 해리슨 포드가 출연한 영화 중 STAR ROLE이 아닌 영화는?? STAR
 /*
 List the film title and the leading actor for all of the films 'Julie Andrews' played in.
 */
+
 SELECT title, name FROM movie
-JOIN casting x ON movie.id = movieid
+JOIN casting ON movie.id = movieid
 JOIN actor ON actor.id =actorid
-WHERE ord=1 AND movieid IN
-(SELECT movieid FROM casting y
-JOIN actor ON actor.id=actorid
-WHERE name='Julie Andrews')
+
+WHERE movie.id in
+(SELECT movieid FROM casting
+WHERE casting.actorid IN (
+  SELECT actor.id FROM actor
+  WHERE actor.name='Julie Andrews')) and ord=1
 
 POINT
-1. Casting을 x,y로 나누어서 이해하기 쉽게 조건 설정한것.
+1.
+(SELECT movieid FROM casting
+WHERE casting.actorid IN (
+  SELECT actor.id FROM actor
+  WHERE actor.name='Julie Andrews'))
+  
+Julie Andrews가 출연한 movieid로 조건 설정하는 것.
 
-12번부터 해야할것 같다......
 
+13
 
 
 
