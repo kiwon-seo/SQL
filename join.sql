@@ -152,7 +152,62 @@ WHERE casting.actorid IN (
 Julie Andrews가 출연한 movieid로 조건 설정하는 것.
 
 
-13
+--#13
+/*
+Obtain a list in alphabetical order of actors who've had at least 15 starring roles.
+Q) 주연 횟수가 15번 이상인 배우들을 알파벳순으로 나열해라.
+*/
+<내 풀이>
+SELECT name FROM actor 
+WHERE id in (SELECT actorid FROM casting
+WHERE ord=1 
+GROUP BY actorid
+HAVING count(movieid)>=15)
+ORDER BY name
+
+
+<모범답안>
+SELECT name
+FROM actor
+  JOIN casting ON (id = actorid AND (SELECT COUNT(ord) FROM casting WHERE actorid = actor.id AND ord=1)>=15)
+GROUP BY name
+
+--#15
+/*
+List the films released in the year 1978 ordered by the number of actors in the cast then by title.
+Q) 1978년도에 개봉한 영화를 Castlist 배우 수에 의해 정렬하고 다음으론 title에 의해 정렬하라.
+*/
+
+SELECT title,COUNT(actorid) FROM casting
+JOIN movie ON (movie.id=casting.movieid)
+WHERE yr=1978
+GROUP BY movieid
+ORDER BY count(actorid) DESC, title
+
+POINT
+1. ORDER BY ~ DESC 
+내림차순으로 정렬할 때는 ORDER BY 절 맨 뒤에 DESC를 붙이면 된다. 그리고 다음으로 정렬할 순은 ,를 찍고 써주면 된다.
+ex) ORDER BY count(actorid) DESC, title
+
+--#16
+/*
+List all the people who have worked with 'Art Garfunkel'.
+Q) 'Art Garfunkel'과 함께 일한 사람의 목록을 보여라.
+*/ 
+<내답안>
+SELECT DISTINCT(name) 
+FROM casting JOIN actor ON (id=actorid)
+WHERE movieid IN (select movieid FROM casting WHERE actorid = (SELECT actorid FROM actor WHERE name='Art Garfunkel')) AND name!='Art Garfunkel'
+
+
+<모범답안>
+SELECT DISTINCT name
+FROM actor JOIN casting ON id=actorid
+WHERE movieid IN (SELECT movieid FROM casting JOIN actor ON (actorid=id AND name='Art Garfunkel')) AND name != 'Art Garfunkel'
+
+POINT
+1. JOIN 할 때 WHERE 절을 줄일 수 있다.
+내답안과 모범답안의 3번째 줄을 확인하면 Art Garfunkel의 actorid 조건을 할때 모범답안은 join을 써서 select문을 쓰는 수고를 덜했다.
 
 
 
